@@ -1,0 +1,9 @@
+{{- $dot := . }}
+{{ range .Values.components }}
+  {{- $type := .type | default "deployment" }}
+  {{- if eq $type "deployment" }}
+    {{- if and (not .schedule) (not .daemonset) (not .statefulset) (not .strictlySingle) }}
+      {{- include "common.deployment" (dict "component" . "context" $ "Values" .Values "Chart" .Chart $dot) }}
+    {{- end }}
+  {{- end }}
+{{ end }}

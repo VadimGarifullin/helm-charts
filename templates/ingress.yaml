@@ -1,0 +1,7 @@
+{{ range .Values.components }}
+  {{- $allowedComponentTypes := list "deployment" "statefulset" "daemonset" }}
+  {{- $type := .type | default "deployment" }}
+    {{- if .ingress }}
+      {{- include "common.ingress" (dict "component" . "context" $) }}
+    {{- end }}
+{{ end }}

@@ -1,0 +1,55 @@
+{
+  "components": [
+    {
+      "name": "api",
+      "replicas": 1,
+      "command": "./docker-entrypoint.sh",
+      "env": {
+        "test": "test"
+      },
+      "envSecret": {
+        "DB_PASS": "vpn_bot-secret"
+      },
+      "resources": {
+        "requests": {
+          "cpu": "500m",
+          "memory": "256Mi"
+        }
+      },
+      "ports": [
+        {
+          "port": 8000
+        }
+      ]
+    },
+    {
+      "name": "celery-worker",
+      "replicas": 2,
+      "envSecret": {
+        "DB_PASS": "vpn_bot-secret"
+      },
+      "command": "pipenv run celery -A vpn_bot worker --loglevel=INFO"
+    },
+    {
+      "name": "celery-beat",
+      "replicas": 2,
+      "envSecret": {
+        "DB_PASS": "vpn_bot-secret"
+      },
+      "command": "pipenv run celery -A vpn_bot beat -l info --scheduler django_celery_beat.schedulers.DatabaseScheduler"
+    }
+  ],
+  "image": {
+    "name": "tg-bot-group/vpn-bot",
+    "tag": "0.0.0-202403300847.gitad22099e"
+  },
+  "imageRegistry": "gitlab.skylinkbot.ru:5050",
+  "env": {
+    "DB_HOST": "database_vpn",
+    "DB_NAME": "postgres",
+    "DB_USER": "postgres",
+    "CI_COMMIT_SHORT_SHA": "d5b53188",
+    "CI_COMMIT_TAG": "",
+    "CI_COMMIT_TITLE": "hello"
+  }
+}

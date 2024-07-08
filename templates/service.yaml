@@ -1,0 +1,11 @@
+{{ range .Values.components }}
+{{/* TODO: Dont check .shedule, .daemonset */}}
+{{/*       use only .type field */}}
+  {{- $allowedComponentTypes := list "deployment" "statefulset" }}
+  {{- $type := .type | default "deployment" }}
+  {{- if or (has $type $allowedComponentTypes) (and (not .schedule) (not .daemonset)) }}
+    {{- if .ports }}
+      {{- include "common.service" (dict "component" . "context" $) }}
+    {{- end }}
+  {{- end }}
+{{ end }}
